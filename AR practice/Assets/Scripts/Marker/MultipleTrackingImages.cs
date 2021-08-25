@@ -31,25 +31,12 @@ public class MultipleTrackingImages : MonoBehaviour
         // 이미지 인식이 처음 되었을 때
         if (args.added.Count > 0)
         {
-            //for (int i = 0; i < args.added.Count; i++)
-            foreach (ARTrackedImage trackedImage in args.added)
+            for (int i = 0; i < args.added.Count; i++)
             {
-                if (trackedImage.transform.childCount == 0)
-                {
-                    // 인식한 이미지의 라이브러리 상의 이름을 가져온다.
-                    string imageName = trackedImage.referenceImage.name;
-
-                    // 인식된 이미지 이름과 동일한 이름의 프리팹을 찾는다.
-                    GameObject prefab = Resources.Load<GameObject>(imageName);
-
-                    // 찾은 프리팹을 인식한 이미지 위치에 생성한다.
-                    GameObject go = Instantiate(prefab);
-                    go.transform.position = trackedImage.transform.position;
-                    go.transform.rotation = trackedImage.transform.rotation;
-                    go.transform.localScale = trackedImage.transform.localScale;
-                    go.transform.parent = trackedImage.transform;
-                }
+                string name = args.added[0].referenceImage.name;
+                StartCoroutine(DB_Manager.db.LoadDB(name, args.added[0].transform));
             }
+
         }
         // 인식된 이미지의 정보가 갱신되었을 때
         else if (args.updated.Count > 0)
@@ -72,5 +59,41 @@ public class MultipleTrackingImages : MonoBehaviour
         {
 
         }
+    }
+
+    IEnumerator StartDBSearch(string refImageName, List<ARTrackedImage> added)
+    {
+
+        //DB에서 카메라로 검색한 이미지에 대한 결과를 검색
+        //StartCoroutine(DB_Manager.db.LoadDB(refImageName));
+
+        while(DB_Manager.db.searchComplete == false)
+        {
+            yield return null;
+        }
+
+        //Vector2 currentPos = new Vector2(LocationManager.locManager.latitude, LocationManager.locManager.longitude);
+        //만일 프리팹을 생성해야하는 경우라면
+        //if (DB_Manager.db.isCreate)
+        //{
+        //    //for (int i = 0; i < args.added.Count; i++)
+        //    foreach (ARTrackedImage trackedImage in added)
+        //    {
+        //        if (trackedImage.transform.childCount == 0)
+        //        {
+        //            // 인식한 이미지의 라이브러리 상의 이름을 가져온다.
+        //            string imageName = trackedImage.referenceImage.name;
+
+        //            // 인식된 이미지 이름과 동일한 이름의 프리팹을 찾는다.
+        //            GameObject prefab = Resources.Load<GameObject>(imageName);
+
+        //            // 찾은 프리팹을 인식한 이미지 위치에 생성한다.
+        //            GameObject go = Instantiate(prefab);
+        //            go.transform.position = trackedImage.transform.position;
+        //            go.transform.rotation = trackedImage.transform.rotation;
+        //            go.transform.localScale = trackedImage.transform.localScale;
+        //            go.transform.parent = trackedImage.transform;
+        //        }
+        //    }
     }
 }
